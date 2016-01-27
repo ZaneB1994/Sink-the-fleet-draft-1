@@ -6,10 +6,12 @@
 //----------------------------------------------------------------------------
 
 #include <iostream>
+#include <fstream>
 #include <iomanip>
 #include "fleet.h"
 using namespace std;
 extern const char* shipNames[7];
+
 //---------------------------------------------------------------------------------
 // Function:	main()
 // Title:		Set ShipInfo
@@ -58,9 +60,11 @@ int main(void)
 	short numCols = SMALLCOLS;			// total number of columns in the array
 	char again = 'N';
 	char gridSize = 'S';
+	char fileName[FILENAME_MAX];
 	short whichPlayer = 0;
 	bool gameOver = false;
 	bool reshot = false;
+	bool willReadFile = false;
 	Cell coord = {0, 0};
 	string message;
 	string filename;
@@ -89,17 +93,22 @@ int main(void)
 		initializePlayer(game + 1);
 		// dynamically create the rows of the array
 		allocMem(game,gridSize);
-		
 
-		// ... your code goes here Dynamic Array
-		short** array = new short*[numRows];
-		for (short i = 0;  i < numRows; ++i)
-			array[i] = new short[numCols];
+		// ... your code goes here
+		
 
 		for(whichPlayer = 0; whichPlayer < NUMPLAYERS; whichPlayer++)
 		{
 			// enter grid files or let users enter ships
+			willReadFile = safeChoice("Player " + to_string(whichPlayer) + ", Would you like to read starting grid from a file?", 'Y', 'N');
+			if (willReadFile){
+				do{
+					safeRead(cin, "Enter File Name: ", fileName);
+				}while(getGrid(game, whichPlayer, gridSize, fileName));
+			}
+			else{
 
+			}
 		}
 		whichPlayer = 0;
 		while(!gameOver)
@@ -111,6 +120,7 @@ int main(void)
 		}
 
 		again = safeChoice("Would you like to play again?", 'Y', 'N');
+		deleteMem(game, gridSize);
 	}
 	while(again == 'Y');
 

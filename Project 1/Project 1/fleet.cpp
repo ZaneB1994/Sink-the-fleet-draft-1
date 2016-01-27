@@ -62,7 +62,10 @@ const int TOTALPIECES = 17; // total pieces in all ships
 void setShipInfo(ShipInfo * shipInfoPtr, Ship name, Direction orientation,
 	unsigned short row, unsigned short col)
 {
-	
+	shipInfoPtr->m_name = name;
+	shipInfoPtr->m_orientation = orientation;
+	shipInfoPtr->m_bowLocation.m_row = row;
+	shipInfoPtr->m_bowLocation.m_col = col;
 }  
 
 //---------------------------------------------------------------------------------
@@ -502,6 +505,7 @@ bool getGrid(Player players[], short whichPlayer, char size, string fileName)
 	char fsize = 'S';
 	short numberOfRows = (toupper(size) == 'L') ? LARGEROWS : SMALLROWS;
 	short numberOfCols = (toupper(size) == 'L') ? LARGECOLS : SMALLCOLS;
+	bool invalidFile = false;
 
 	try
 	{
@@ -522,9 +526,58 @@ bool getGrid(Player players[], short whichPlayer, char size, string fileName)
 		return false;
 	}	
 	// your code goes here ...
-	
+	if (!(ifs >> fsize))
+		invalidFile = true;
+	if (fsize == size && !invalidFile){
+		short shipCount = 0;
+		bool shipAlreadyAdded[SHIP_SIZE_ARRAYSIZE - 1] = { false, false, false, false, false };
+		while (ifs.good()){
+			if (!(ifs >> cell)){
+				invalidFile = true; break;
+			}
+			if (++shipCount > SHIP_SIZE_ARRAYSIZE - 1){
+				invalidFile = true; break;
+			}
+			Ship ship = static_cast<Ship>(atoi(&cell));
+			if (!(ship < MINESWEEPER || ship > CARRIER || shipAlreadyAdded[ship - 1])){
+				invalidFile = true; break;
+			}
+			shipAlreadyAdded[ship - 1] = true;
+			short shipSizei = shipSize[ship];
+			if (!(ifs >> cell)){
+				invalidFile = true; break;
+			}
+			if (!(cell == 'V' || cell == 'H')){
+				invalidFile = true; break;
+			}
+			Direction orientation = (cell == 'V') ? VERTICAL : HORIZONTAL;
+			Cell bowLocation = getCoord(ifs, fsize);
+			if (!validLocation(players[whichPlayer], ship, fsize)){
+				invalidFile = true; break;
+			}
+			short piecesLeft;
+			if (!(cell >> piecesLeft)){
+				invalidFile = true; break;
+			}
+			if (piecesLeft > shipSize[ship]){
+				invalidFile = true; break;
+			}
+			setShipInfo(&players[whichPlayer].m_ships[ship], ship, orientation, bowLocation.m_row, bowLocation.m_col);
+			char shipSymbol;
+			for (short i = 0; i < shipSizei; i++){
+				short rowAdd = (orientation == HORIZONTAL) ? 1 : 0;
+				short colAdd = (orientation == VERTICAL) ? 1 : 0;
+				players[whichPlayer].m_gameGrid[0][bowLocation.m_row + i * rowAdd][bowLocation.m_col + i * colAdd] = ship;
+				players[(whichPlayer) ? 0 : 1].m_gameGrid[1][bowLocation.m_row + i * rowAdd][bowLocation.m_col + i * colAdd] = ship;
+			}
+		}
+	}
+	else
+		invalidFile = true;
 
-	return true;
+	ifs.close();
+
+	return invalidFile;
 }
 
 //---------------------------------------------------------------------------------
@@ -628,6 +681,7 @@ bool validLocation(const Player& player, short shipNumber, char size)
 	short numberOfRows = (toupper(size)=='L') ? LARGEROWS : SMALLROWS;
 	short numberOfCols = (toupper(size)=='L') ? LARGECOLS : SMALLCOLS;
 	// your code goes here ...
+
 
 	// replace the return value
 	return true;
