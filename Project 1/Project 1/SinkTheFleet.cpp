@@ -153,8 +153,10 @@ int main(void)
 
 			while (cin.get() != '\n');
 
-			if (game[0].m_piecesLeft == 0 || game[1].m_piecesLeft == 0)
+			if (game[0].m_piecesLeft == 0 || game[1].m_piecesLeft == 0){
 				gameOver = !gameOver;
+				endBox(!whichPlayer);
+			}
 		}
 
 		again = safeChoice("Would you like to play again?", 'Y', 'N');
