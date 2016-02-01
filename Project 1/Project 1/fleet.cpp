@@ -401,7 +401,7 @@ void setships(Player players[], char size, short whichPlayer)
 			<< shipNames[j] << " orientation";
 		input =  safeChoice(outSStream.str(), 'V', 'H');
 		players[whichPlayer].m_ships[j].m_orientation
-			= (input == 'H') ? VERTICAL : HORIZONTAL;
+			= (input == 'V') ? VERTICAL : HORIZONTAL;
 		cout << "Player " << whichPlayer + 1 << " Enter " << shipNames[j] <<
 			" bow coordinates <row letter><col #>: ";
 		players[whichPlayer].m_ships[j].m_bowLocation = getCoord(cin, size);
@@ -416,8 +416,8 @@ void setships(Player players[], char size, short whichPlayer)
 		}
 		// your code goes here ...
 
-		short rowAdd = (players[whichPlayer].m_ships[j].m_orientation == HORIZONTAL) ? 1 : 0;
-		short colAdd = (players[whichPlayer].m_ships[j].m_orientation == VERTICAL) ? 1 : 0;
+		short rowAdd = (players[whichPlayer].m_ships[j].m_orientation == VERTICAL) ? 1 : 0;
+		short colAdd = (players[whichPlayer].m_ships[j].m_orientation == HORIZONTAL) ? 1 : 0;
 
 		Ship ship = players[whichPlayer].m_ships[j].m_name;
 
@@ -431,7 +431,8 @@ void setships(Player players[], char size, short whichPlayer)
 
 	} // end for j
 
-
+	system("cls");
+	printGrid(cout, players[whichPlayer].m_gameGrid[0], size);
 	save = safeChoice("\nSave starting grid?", 'Y', 'N');
 	if(save == 'Y')
 		saveGrid(players, whichPlayer, size);
@@ -475,7 +476,8 @@ void saveGrid(Player players[], short whichPlayer, char size)
 	// your code goes here ...
 	char filename[25] = "";
 
-	safeRead(cin, filename, "Enter name of file to save to (.shp will be added): ");
+	cout << "Enter name of file to save to (.shp will be added): ";
+	safeRead(cin, filename, "invalid file.");
 
 	string filestring = "";
 	filestring = filestring + filename + ".shp";
@@ -491,15 +493,15 @@ void saveGrid(Player players[], short whichPlayer, char size)
 	{
 		outputFile << p.m_ships[i].m_name << ' ';
 
-		outputFile << (p.m_ships[i].m_orientation == HORIZONTAL) ? 'H' : 'V' << ' ';
+		outputFile << ((p.m_ships[i].m_orientation == HORIZONTAL) ? 'H' : 'V') << ' ';
 
 		char row = 'A';
 
-		row += p.m_ships[i].m_bowLocation.m_row - 1;
+		row += p.m_ships[i].m_bowLocation.m_row;
 
 		outputFile << row;
 
-		outputFile << p.m_ships[i].m_bowLocation.m_col << ' ';
+		outputFile << p.m_ships[i].m_bowLocation.m_col + 1 << ' ';
 	}
 
 	outputFile.close();
@@ -585,7 +587,7 @@ bool getGrid(Player players[], short whichPlayer, char size, string fileName)
 				validFile = false; break;
 			}
 			Ship ship = static_cast<Ship>(atoi(&cell));
-			if (!(ship < MINESWEEPER || ship > CARRIER || shipAlreadyAdded[ship - 1])){
+			if (ship < MINESWEEPER || ship > CARRIER || shipAlreadyAdded[ship - 1]){
 				validFile = false; break;
 			}
 			shipAlreadyAdded[ship - 1] = true;
@@ -597,21 +599,21 @@ bool getGrid(Player players[], short whichPlayer, char size, string fileName)
 				validFile = false; break;
 			}
 			Direction orientation = (cell == 'V') ? VERTICAL : HORIZONTAL;
-			Cell bowLocation = getCoord(ifs, fsize);
+			char coord[3];
+			if (!(ifs >> coord)){
+				validFile = false; break;
+			}
+			istringstream iss;
+			iss.str(coord);
+			Cell bowLocation = getCoord(iss, fsize);
+			setShipInfo(&players[whichPlayer].m_ships[ship], ship, orientation, bowLocation.m_row, bowLocation.m_col);
 			if (!validLocation(players[whichPlayer], ship, fsize)){
 				validFile = false; break;
 			}
-			short piecesLeft;
-			if (!(ifs >> piecesLeft)){
-				validFile = false; break;
-			}
-			if (piecesLeft > shipSize[ship]){
-				validFile = false; break;
-			}
-			setShipInfo(&players[whichPlayer].m_ships[ship], ship, orientation, bowLocation.m_row, bowLocation.m_col);
+			// setShipInfo(&players[whichPlayer].m_ships[ship], ship, orientation, bowLocation.m_row, bowLocation.m_col);
 			// char shipSymbol;
-			short rowAdd = (orientation == HORIZONTAL) ? 1 : 0;
-			short colAdd = (orientation == VERTICAL) ? 1 : 0;
+			short rowAdd = (orientation == VERTICAL) ? 1 : 0;
+			short colAdd = (orientation == HORIZONTAL) ? 1 : 0;
 
 			for (short i = 0; i < shipSizei; i++){
 				players[whichPlayer].m_gameGrid[0][bowLocation.m_row + i * rowAdd][bowLocation.m_col + i * colAdd] = ship;
@@ -621,14 +623,18 @@ bool getGrid(Player players[], short whichPlayer, char size, string fileName)
 
 		system("cls");
 		printGrid(cout, players[whichPlayer].m_gameGrid[0], size);
-		if (!safeChoice("OK?", 'Y', 'N'))
+		if (safeChoice("OK?", 'Y', 'N') == 'N'){
 			validFile = false;
-		system("cls");
+		}
 	}
 	else
 		validFile = false;
 
 	ifs.close();
+
+	if (!validFile){
+		clearGrid(players, whichPlayer, size);
+	}
 
 	return validFile;
 }
@@ -745,15 +751,15 @@ bool validLocation(const Player& player, short shipNumber, char size)
 
 	Direction orientation = player.m_ships[shipNumber].m_orientation;
 
-	short rowAdd = (orientation == HORIZONTAL) ? 1 : 0;
-	short colAdd = (orientation == VERTICAL) ? 1 : 0;
+	short rowAdd = (orientation == VERTICAL) ? 1 : 0;
+	short colAdd = (orientation == HORIZONTAL) ? 1 : 0;
 
 	for (int i = 0; i < shipSize[shipNumber]; ++i){
 		if (col + i * colAdd > numberOfCols)
 			return false;
 		if (row + i * rowAdd > numberOfRows)
 			return false;
-		if (player.m_gameGrid[0][row + i * rowAdd][col + i * colAdd] != NOSHIP)
+		if (player.m_gameGrid[0][row + (i * rowAdd)][col + (i * colAdd)] != NOSHIP)
 			return false;
 	}
 
@@ -858,5 +864,17 @@ void endBox(short player)
 	boxLine(cout, msg.str() , BOXWIDTH, 'C');
 	boxLine(cout, empty, BOXWIDTH);
 	boxBottom(cout, BOXWIDTH);
+}
+
+void clearGrid(Player players[], short whichPlayer, char size)
+{
+	short numberOfRows = (toupper(size) == 'L') ? LARGEROWS : SMALLROWS;
+	short numberOfCols = (toupper(size) == 'L') ? LARGECOLS : SMALLCOLS;
+
+	for (short i = 0; i < numberOfRows; ++i){
+		for (short j = 0; j < numberOfCols; ++j){
+			players[whichPlayer].m_gameGrid[0][i][j] = NOSHIP;
+		}
+	}
 }
 

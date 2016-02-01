@@ -153,4 +153,5 @@ void header(ostream& sout);
 // prints closinging graphic
 void endBox(short player);		
 // your headers go here ...
+void clearGrid(Player players[], short whichPlayer, char size);
 #endif

@@ -104,10 +104,9 @@ int main(void)
 			// enter grid files or let users enter ships
 			willReadFile = safeChoice("Player " + to_string(whichPlayer+1) + ", Would you like to read starting grid from a file?", 'Y', 'N');
 			if (willReadFile == 'Y'){
-				do{
-					cout << "Enter File Name: ";
-					safeRead(cin, fileName, "invalid filename.");
-				}while(!getGrid(game, whichPlayer, gridSize, fileName));
+				cout << "Enter File Name: ";
+				safeRead(cin, fileName, "invalid filename.");
+				whichPlayer -= !getGrid(game, whichPlayer, gridSize, fileName);
 			}
 			else{
 				setships(game, gridSize, whichPlayer);
@@ -116,8 +115,8 @@ int main(void)
 
 		system("cls");
 		header(cout);
-		while (cin.get() != '\n')
-			cout << "press <enter> to start the battle. . .\n";
+		cout << "press <enter> to start the battle. . .\n";
+		while (cin.get() != '\n');
 
 		whichPlayer = 0;
 		while(!gameOver)
@@ -143,14 +142,16 @@ int main(void)
 				--game[!whichPlayer].m_piecesLeft;
 
 				cout << "Hit!";
-				cout << "\nPrepare for another shot!";
+				cout << "\nPrepare for another shot! Press <enter>";
 			}
 			else
 			{
 				game[whichPlayer].m_gameGrid[1][coord.m_row][coord.m_col] = MISSED;
-				cout << "You've Missed!\n Changing players.";
+				cout << "You've Missed!\n Changing players. Press <enter>";
 				whichPlayer = !whichPlayer;
 			}
+
+			while (cin.get() != '\n');
 
 			if (game[0].m_piecesLeft == 0 || game[1].m_piecesLeft == 0)
 				gameOver = !gameOver;
