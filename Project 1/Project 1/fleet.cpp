@@ -33,15 +33,15 @@ const int TOTALPIECES = 17; // total pieces in all ships
 // Title:		Set ShipInfo
 // Description:
 //		Sets struct ShipInfo fields
-// Programmer:
+// Programmer: Donald Fitzhugh
 // 
 // Date:	12/20/05
 //
 // Version:	0.1
 // 
-// Environment: Intel Xeon PC 
-//                Software:   MS Windows 7 for execution; 
-//                Compiles under Microsoft Visual C++.Net 2012
+// Environment: Intel Core i7 
+//                Software:   MS Windows 10; 
+//                Compiles under Microsoft Visual C++.Net 2013
 //
 // Calls:
 //
@@ -74,15 +74,15 @@ void setShipInfo(ShipInfo * shipInfoPtr, Ship name, Direction orientation,
 // Description:
 //		allocates memory for current grids
 // Programmer:	Paul Bladek
-// modified by:	
+// modified by:	Donald Fitzhugh
 // 
 // Date:	9/13/06
 //
 // Version:	1.01
 // 
-// Environment: Hardware: i3 
-//              Software: OS: Windows 7; 
-//              Compiles under Microsoft Visual C++ 2012
+// Environment: Intel Core i7 
+//                Software:   MS Windows 10; 
+//                Compiles under Microsoft Visual C++.Net 2013
 //
 // Calls:
 //
@@ -141,15 +141,15 @@ void allocMem(Player players[], char size)
 // Title:		Delete Memory
 // Description:
 //		Safely deletes memory for grids
-// Programmer:
+// Programmer:Donald Fitzhugh
 // 
 // Date:	12/20/05
 //
 // Version:	0.1
 // 
-// Environment: Hardware: i3 
-//              Software: OS: Windows 7; 
-//              Compiles under Microsoft Visual C++ 2012
+// Environment: Intel Core i7 
+//                Software:   MS Windows 10; 
+//                Compiles under Microsoft Visual C++.Net 2013
 //
 // Calls:
 //
@@ -197,15 +197,15 @@ void deleteMem(Player players[], char size)
 // Title:	Print Ship 
 // Description:
 //		Print grid element for the proper ship
-// Programmer:	Paul Bladek
+// Programmer:	Paul Bladek, Donald Fitzhugh
 // 
 // Date:	9/12/06
 //
 // Version:	1.0
 // 
-// Environment: Hardware: i3 
-//              Software: OS: Windows 7; 
-//              Compiles under Microsoft Visual C++ 2012
+// Environment: Intel Core i7 
+//                Software:   MS Windows 10; 
+//                Compiles under Microsoft Visual C++.Net 2013
 //
 // Output:		three characters representing one ship to sout
 //
@@ -253,15 +253,15 @@ void printShip(ostream & sout, Ship thisShip)
 // Title:	Print Ship 
 // Description:
 //		Print grid element for the proper ship
-// Programmer:
+// Programmer: Donald Fitzhugh
 // 
 // Date:	12/20/05
 //
 // Version:	0.1
 // 
-// Environment: Hardware: i3 
-//              Software: OS: Windows 7; 
-//              Compiles under Microsoft Visual C++ 2012
+// Environment: Intel Core i7 
+//                Software:   MS Windows 10; 
+//                Compiles under Microsoft Visual C++.Net 2013
 //
 // Output:	a single grid to sout
 //
@@ -289,17 +289,22 @@ void printGrid(ostream& sout, Ship** grid, char size)
 	int sideNumbers = 0;
 	char topLetters = 'A';
 
-	
+	sout << ' ';
 	for(short j = 1; j <= numberOfCols; ++j)
 		sout << setw(3) << j;
 	sout  << endl;
 
-	for (int i = 0; i <= numberOfRows; ++i)
+	for (int i = 0; i < numberOfRows; ++i)
 	{
-		sout << sideNumbers << VERT;
+		sout << topLetters++ << VERT;
+		for (int j = 0; j < numberOfCols && i < numberOfRows; j++)
+		{
+			printShip(sout, grid[i][j]);
+		}
+		sout << endl;
 		for (int j = 0; j <= numberOfCols; j++)
 		{
-			sout << HORIZ << VERT;
+			sout << HORIZ << CROSS << HORIZ;
 		}
 		sout << endl;
 	}
@@ -313,15 +318,15 @@ void printGrid(ostream& sout, Ship** grid, char size)
 // Title:	Initialize Player 
 // Description:
 //		sets initial values for m_ships and m_piecesLeft
-// Programmer:	Paul Bladek
+// Programmer:	Paul Bladek, Donald Fitzhugh
 // 
 // Date:	9/12/06
 //
 // Version:	1.0
 // 
-// Environment: Hardware: i3 
-//              Software: OS: Windows 7; 
-//              Compiles under Microsoft Visual C++ 2012
+// Environment: Intel Core i7 
+//                Software:   MS Windows 10; 
+//                Compiles under Microsoft Visual C++.Net 2013
 //
 // Calls:
 //
@@ -332,7 +337,7 @@ void printGrid(ostream& sout, Ship** grid, char size)
 // Returns:	void
 //
 // History Log: 
-//		9/12/06 PB comleted v 1.0
+//		9/12/06 PB completed v 1.0
 //     
 //---------------------------------------------------------------------------------
 void initializePlayer(Player* playerPtr)
@@ -348,16 +353,16 @@ void initializePlayer(Player* playerPtr)
 // Title:	Set Ships 
 // Description:
 //		Allows user to put ships in grid
-// Programmer:	Paul Bladek
+// Programmer:	Paul Bladek, Donald Fitzhugh
 // modified by:	
 // 
 // Date:	9/12/06
 //
 // Version:	0.5
 // 
-// Environment: Hardware: i3 
-//              Software: OS: Windows 7; 
-//              Compiles under Microsoft Visual C++ 2012
+// Environment: Intel Core i7 
+//                Software:   MS Windows 10; 
+//                Compiles under Microsoft Visual C++.Net 2013
 //
 // Input:	location and orientation using getCoord from cin
 //
@@ -396,7 +401,7 @@ void setships(Player players[], char size, short whichPlayer)
 			<< shipNames[j] << " orientation";
 		input =  safeChoice(outSStream.str(), 'V', 'H');
 		players[whichPlayer].m_ships[j].m_orientation
-			= (input == 'V') ? VERTICAL : HORIZONTAL;
+			= (input == 'H') ? VERTICAL : HORIZONTAL;
 		cout << "Player " << whichPlayer + 1 << " Enter " << shipNames[j] <<
 			" bow coordinates <row letter><col #>: ";
 		players[whichPlayer].m_ships[j].m_bowLocation = getCoord(cin, size);
@@ -411,10 +416,22 @@ void setships(Player players[], char size, short whichPlayer)
 		}
 		// your code goes here ...
 
+		short rowAdd = (players[whichPlayer].m_ships[j].m_orientation == HORIZONTAL) ? 1 : 0;
+		short colAdd = (players[whichPlayer].m_ships[j].m_orientation == VERTICAL) ? 1 : 0;
 
+		Ship ship = players[whichPlayer].m_ships[j].m_name;
 
+		short shipSizei = shipSize[ship];
+		Cell bowLocation = players[whichPlayer].m_ships[j].m_bowLocation;
+
+		for (short i = 0; i < shipSizei; i++){
+			players[whichPlayer].m_gameGrid[0][bowLocation.m_row + i * rowAdd][bowLocation.m_col + i * colAdd] = ship;
+			// players[(whichPlayer) ? 0 : 1].m_gameGrid[1][bowLocation.m_row + i * rowAdd][bowLocation.m_col + i * colAdd] = ship;
+		}
 
 	} // end for j
+
+
 	save = safeChoice("\nSave starting grid?", 'Y', 'N');
 	if(save == 'Y')
 		saveGrid(players, whichPlayer, size);
@@ -425,15 +442,15 @@ void setships(Player players[], char size, short whichPlayer)
 // Title:	Save Grid 
 // Description:
 //		Saves the ship grid to a file
-// Programmer:
+// Programmer: Donald Fitzhugh
 // 
 // Date:	12/20/05
 //
 // Version:	0.1
 // 
-// Environment: Hardware: i3 
-//              Software: OS: Windows 7; 
-//              Compiles under Microsoft Visual C++ 2012
+// Environment: Intel Core i7 
+//                Software:   MS Windows 10; 
+//                Compiles under Microsoft Visual C++.Net 2013
 //
 // Output:	grid to specified file
 //
@@ -456,7 +473,36 @@ void saveGrid(Player players[], short whichPlayer, char size)
 	short numberOfRows = (toupper(size) == 'L') ? LARGEROWS : SMALLROWS;
 	short numberOfCols = (toupper(size) == 'L') ? LARGECOLS : SMALLCOLS;	
 	// your code goes here ...
-	
+	char filename[25] = "";
+
+	safeRead(cin, filename, "Enter name of file to save to (.shp will be added): ");
+
+	string filestring = "";
+	filestring = filestring + filename + ".shp";
+
+	ofstream outputFile;
+	outputFile.open(filestring.c_str(), ios::out);
+
+	outputFile << size << ' ';
+
+	Player p = players[whichPlayer];
+
+	for (int i = 1; i < SHIP_SIZE_ARRAYSIZE; i++)
+	{
+		outputFile << p.m_ships[i].m_name << ' ';
+
+		outputFile << (p.m_ships[i].m_orientation == HORIZONTAL) ? 'H' : 'V' << ' ';
+
+		char row = 'A';
+
+		row += p.m_ships[i].m_bowLocation.m_row - 1;
+
+		outputFile << row;
+
+		outputFile << p.m_ships[i].m_bowLocation.m_col << ' ';
+	}
+
+	outputFile.close();
 }
 
 //---------------------------------------------------------------------------------
@@ -464,16 +510,16 @@ void saveGrid(Player players[], short whichPlayer, char size)
 // Title:	GetGrid 
 // Description:
 //		Reads grid from a file and properly sets the ships
-// Programmer:	Paul Bladek
+// Programmer:	Paul Bladek, Donald Fitzhugh
 // modified by:	
 // 
 // Date:	9/12/06
 //
 // Version:	0.5
 // 
-// Environment: Hardware: i3 
-//              Software: OS: Windows 7; 
-//              Compiles under Microsoft Visual C++ 2012
+// Environment: Intel Core i7 
+//                Software:   MS Windows 10; 
+//                Compiles under Microsoft Visual C++.Net 2013
 //
 // Input:	grid from specified file
 //
@@ -505,11 +551,11 @@ bool getGrid(Player players[], short whichPlayer, char size, string fileName)
 	char fsize = 'S';
 	short numberOfRows = (toupper(size) == 'L') ? LARGEROWS : SMALLROWS;
 	short numberOfCols = (toupper(size) == 'L') ? LARGECOLS : SMALLCOLS;
-	bool invalidFile = false;
+	bool validFile = true;
 
 	try
 	{
-		ifs.open(fileName.c_str());
+		ifs.open(fileName.c_str(), ios::in);
 		if(!ifs)
 		{
 			cout << "could not open file " << fileName << endl
@@ -527,57 +573,64 @@ bool getGrid(Player players[], short whichPlayer, char size, string fileName)
 	}	
 	// your code goes here ...
 	if (!(ifs >> fsize))
-		invalidFile = true;
-	if (fsize == size && !invalidFile){
+		validFile = false;
+	if (fsize == size && validFile){
 		short shipCount = 0;
 		bool shipAlreadyAdded[SHIP_SIZE_ARRAYSIZE - 1] = { false, false, false, false, false };
 		while (ifs.good()){
 			if (!(ifs >> cell)){
-				invalidFile = true; break;
+				validFile = false; break;
 			}
 			if (++shipCount > SHIP_SIZE_ARRAYSIZE - 1){
-				invalidFile = true; break;
+				validFile = false; break;
 			}
 			Ship ship = static_cast<Ship>(atoi(&cell));
 			if (!(ship < MINESWEEPER || ship > CARRIER || shipAlreadyAdded[ship - 1])){
-				invalidFile = true; break;
+				validFile = false; break;
 			}
 			shipAlreadyAdded[ship - 1] = true;
 			short shipSizei = shipSize[ship];
 			if (!(ifs >> cell)){
-				invalidFile = true; break;
+				validFile = false; break;
 			}
 			if (!(cell == 'V' || cell == 'H')){
-				invalidFile = true; break;
+				validFile = false; break;
 			}
 			Direction orientation = (cell == 'V') ? VERTICAL : HORIZONTAL;
 			Cell bowLocation = getCoord(ifs, fsize);
 			if (!validLocation(players[whichPlayer], ship, fsize)){
-				invalidFile = true; break;
+				validFile = false; break;
 			}
 			short piecesLeft;
-			if (!(cell >> piecesLeft)){
-				invalidFile = true; break;
+			if (!(ifs >> piecesLeft)){
+				validFile = false; break;
 			}
 			if (piecesLeft > shipSize[ship]){
-				invalidFile = true; break;
+				validFile = false; break;
 			}
 			setShipInfo(&players[whichPlayer].m_ships[ship], ship, orientation, bowLocation.m_row, bowLocation.m_col);
-			char shipSymbol;
+			// char shipSymbol;
+			short rowAdd = (orientation == HORIZONTAL) ? 1 : 0;
+			short colAdd = (orientation == VERTICAL) ? 1 : 0;
+
 			for (short i = 0; i < shipSizei; i++){
-				short rowAdd = (orientation == HORIZONTAL) ? 1 : 0;
-				short colAdd = (orientation == VERTICAL) ? 1 : 0;
 				players[whichPlayer].m_gameGrid[0][bowLocation.m_row + i * rowAdd][bowLocation.m_col + i * colAdd] = ship;
-				players[(whichPlayer) ? 0 : 1].m_gameGrid[1][bowLocation.m_row + i * rowAdd][bowLocation.m_col + i * colAdd] = ship;
+				// players[(whichPlayer) ? 0 : 1].m_gameGrid[1][bowLocation.m_row + i * rowAdd][bowLocation.m_col + i * colAdd] = ship;
 			}
 		}
+
+		system("cls");
+		printGrid(cout, players[whichPlayer].m_gameGrid[0], size);
+		if (!safeChoice("OK?", 'Y', 'N'))
+			validFile = false;
+		system("cls");
 	}
 	else
-		invalidFile = true;
+		validFile = false;
 
 	ifs.close();
 
-	return invalidFile;
+	return validFile;
 }
 
 //---------------------------------------------------------------------------------
@@ -585,15 +638,15 @@ bool getGrid(Player players[], short whichPlayer, char size, string fileName)
 // Title:	Get Coordinates 
 // Description:
 //		Returns a cell with coordinates set by user
-// Programmer:	Paul Bladek
+// Programmer:	Paul Bladek, Donald Fitzhugh
 // 
 // Date:	9/12/06
 //
 // Version:	1.0
 // 
-// Environment: Hardware: i3 
-//              Software: OS: Windows 7; 
-//              Compiles under Microsoft Visual C++ 2012
+// Environment: Intel Core i7 
+//                Software:   MS Windows 10; 
+//                Compiles under Microsoft Visual C++.Net 2013
 //
 // Input:	cell coordinates (in the form "A13" from sin
 //
@@ -625,12 +678,12 @@ Cell getCoord(istream& sin, char size)
 	{
 		col = 0;
 		cout << "Row must be a letter from A to " << highChar 
-			<< " and column must be  from 1 to "  << numberOfCols << ": ";
+			<< " and column must be from 1 to "  << numberOfCols << ": ";
 		while((row = toupper(sin.get())) < 'A' || row  > highChar)
 		{
 			sin.ignore(BUFFER_SIZE, '\n');
 			cout << "Row must be a letter from A to " << highChar 
-				<< " and column must be  from 1 to "  << numberOfCols << ": ";
+				<< " and column must be from 1 to "  << numberOfCols << ": ";
 		}
 		sin >> col;
 		if(!sin)
@@ -649,15 +702,15 @@ Cell getCoord(istream& sin, char size)
 // Title:	Valid Location 
 // Description:
 //		Can the ship legitimately go there?
-// Programmer:
+// Programmer: Donald Fitzhugh
 // 
 // Date:	12/20/05
 //
 // Version:	0.1
 // 
-// Environment: Hardware: i3 
-//              Software: OS: Windows 7; 
-//              Compiles under Microsoft Visual C++ 2012
+// Environment: Intel Core i7 
+//                Software:   MS Windows 10; 
+//                Compiles under Microsoft Visual C++.Net 2013
 //
 // Calls:
 //
@@ -682,6 +735,37 @@ bool validLocation(const Player& player, short shipNumber, char size)
 	short numberOfCols = (toupper(size)=='L') ? LARGECOLS : SMALLCOLS;
 	// your code goes here ...
 
+	short row = player.m_ships[shipNumber].m_bowLocation.m_row;
+	short col = player.m_ships[shipNumber].m_bowLocation.m_col;
+
+	if (col < 0)
+		return false;
+	if (row < 0)
+		return false;
+
+	Direction orientation = player.m_ships[shipNumber].m_orientation;
+
+	short rowAdd = (orientation == HORIZONTAL) ? 1 : 0;
+	short colAdd = (orientation == VERTICAL) ? 1 : 0;
+
+	for (int i = 0; i < shipSize[shipNumber]; ++i){
+		if (col + i * colAdd > numberOfCols)
+			return false;
+		if (row + i * rowAdd > numberOfRows)
+			return false;
+		if (player.m_gameGrid[0][row + i * rowAdd][col + i * colAdd] != NOSHIP)
+			return false;
+	}
+
+	//if (player.m_gameGrid.m_ships[shipSize] == players[i].m_gameGrid[0][j][k] = NOSHIP ){
+	//	printShip;
+	//else (players[whichplayer].m_gamegrid.m_ships[shipSize] = false)
+	//	cout << " " << players[whichPlayer], j, size;
+	//if (players[(whichplayer)].m_gamegrid.m_ships[shipSize] = true){
+	//	cout << " " << players[(whichPlayer) ? 0 : 1].m_gameGrid[1][bowLocation.m_row + i * rowAdd][bowLocation.m_col + i * colAdd]
+	//else (players[whichplayer].m_gamegrid.m_ships[shipSize] = false)
+	//	cout << " " << players[whichPlayer], j, size;
+	//}
 
 	// replace the return value
 	return true;
@@ -692,15 +776,15 @@ bool validLocation(const Player& player, short shipNumber, char size)
 // Title:	header 
 // Description:
 //		Prints opening graphic
-// Programmer:	Paul Bladek
+// Programmer:	Paul Bladek, Donald Fitzhugh
 // 
 // Date:	9/12/06
 //
 // Version:	1.0
 // 
-// Environment: Hardware: i3 
-//              Software: OS: Windows 7; 
-//              Compiles under Microsoft Visual C++ 2012
+// Environment: Intel Core i7 
+//                Software:   MS Windows 10; 
+//                Compiles under Microsoft Visual C++.Net 2013
 //
 // Output:	
 //
@@ -738,15 +822,15 @@ void header(ostream& sout)
 // Title:	End Box 
 // Description:
 //		prints closinging graphic
-// Programmer:	Paul Bladek
+// Programmer:	Paul Bladek, Donald Fitzhugh
 // 
 // Date:	9/12/06
 //
 // Version:	1.0
 // 
-// Environment: Hardware: i3 
-//              Software: OS: Windows 7; 
-//              Compiles under Microsoft Visual C++ 2012
+// Environment: Intel Core i7 
+//                Software:   MS Windows 10; 
+//                Compiles under Microsoft Visual C++.Net 2013
 //
 // Output:	
 //

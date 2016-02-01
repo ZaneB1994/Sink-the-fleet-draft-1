@@ -18,15 +18,15 @@ extern const char* shipNames[7];
 // Description:
 //				Runs the Sink the Fleet Game
 // Programmer:	Paul Bladek
-// modified by:
+// modified by: Donald Fitzhugh
 // 
 // Date:		12/9/2012
 //
 // Version:		0.5
 // 
-// Environment: Hardware: i3 
-//              Software: OS: Windows 7; 
-//              Compiles under Microsoft Visual C++ 2012
+// Environment: Intel Core i7 
+//                Software:   MS Windows 10; 
+//                Compiles under Microsoft Visual C++.Net 2013
 //
 // Input:		
 //
@@ -56,15 +56,18 @@ extern const char* shipNames[7];
 //---------------------------------------------------------------------------------
 int main(void)
 {
+	// const short TOTALPIECES = 17;
 	short numRows = SMALLROWS;			// total number of rows in the array
 	short numCols = SMALLCOLS;			// total number of columns in the array
+	// short Player1Hits = 0;
+	// short Player2Hits = 0;
 	char again = 'N';
 	char gridSize = 'S';
 	char fileName[FILENAME_MAX];
+	char willReadFile = false;
 	short whichPlayer = 0;
 	bool gameOver = false;
 	bool reshot = false;
-	bool willReadFile = false;
 	Cell coord = {0, 0};
 	string message;
 	string filename;
@@ -95,28 +98,62 @@ int main(void)
 		allocMem(game,gridSize);
 
 		// ... your code goes here
-		
 
 		for(whichPlayer = 0; whichPlayer < NUMPLAYERS; whichPlayer++)
 		{
 			// enter grid files or let users enter ships
-			willReadFile = safeChoice("Player " + to_string(whichPlayer) + ", Would you like to read starting grid from a file?", 'Y', 'N');
-			if (willReadFile){
+			willReadFile = safeChoice("Player " + to_string(whichPlayer+1) + ", Would you like to read starting grid from a file?", 'Y', 'N');
+			if (willReadFile == 'Y'){
 				do{
-					safeRead(cin, "Enter File Name: ", fileName);
-				}while(getGrid(game, whichPlayer, gridSize, fileName));
+					cout << "Enter File Name: ";
+					safeRead(cin, fileName, "invalid filename.");
+				}while(!getGrid(game, whichPlayer, gridSize, fileName));
 			}
 			else{
-
+				setships(game, gridSize, whichPlayer);
 			}
 		}
+
+		system("cls");
+		header(cout);
+		while (cin.get() != '\n')
+			cout << "press <enter> to start the battle. . .\n";
+
 		whichPlayer = 0;
 		while(!gameOver)
 		{
-		// ... a lot more stuff ...
+			system("cls");
+			printGrid(cout, game[whichPlayer].m_gameGrid[1], gridSize);
+			cout << "Player " << whichPlayer + 1 << ", Enter Coordinates for firing:\n";
+			Cell coord = getCoord(cin, gridSize);
+			if (game[!whichPlayer].m_gameGrid[0][coord.m_row][coord.m_col] != NOSHIP)// &&
+				// game[whichPlayer].m_gameGrid[1][coord.m_row][coord.m_col] != MISSED &&
+				// game[whichPlayer].m_gameGrid[1][coord.m_row][coord.m_col] != HIT)
+			{
+				if (game[whichPlayer].m_gameGrid[1][coord.m_row][coord.m_col] == HIT || game[whichPlayer].m_gameGrid[1][coord.m_row][coord.m_col] == MISSED){
+					cout << "You've already fired at there. Enter a different coordinate.\n";
+					continue; // skips this part of the loop but doesn't break out of it
+				}
+				
+				game[whichPlayer].m_gameGrid[1][coord.m_row][coord.m_col] = HIT;
+				// if (whichPlayer == 0)
+					// Player1Hits++;
+				// else
+					// Player2Hits++;
+				--game[!whichPlayer].m_piecesLeft;
 
+				cout << "Hit!";
+				cout << "\nPrepare for another shot!";
+			}
+			else
+			{
+				game[whichPlayer].m_gameGrid[1][coord.m_row][coord.m_col] = MISSED;
+				cout << "You've Missed!\n Changing players.";
+				whichPlayer = !whichPlayer;
+			}
 
-			whichPlayer = !whichPlayer;  // switch players
+			if (game[0].m_piecesLeft == 0 || game[1].m_piecesLeft == 0)
+				gameOver = !gameOver;
 		}
 
 		again = safeChoice("Would you like to play again?", 'Y', 'N');
