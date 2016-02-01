@@ -605,7 +605,13 @@ bool getGrid(Player players[], short whichPlayer, char size, string fileName)
 			}
 			istringstream iss;
 			iss.str(coord);
-			Cell bowLocation = getCoord(iss, fsize);
+			
+			Cell bowLocation;
+			bowLocation.m_row = static_cast<short>(iss.get() - 'A');
+			iss >> bowLocation.m_col;
+			--bowLocation.m_col;
+			iss.clear();
+
 			setShipInfo(&players[whichPlayer].m_ships[ship], ship, orientation, bowLocation.m_row, bowLocation.m_col);
 			if (!validLocation(players[whichPlayer], ship, fsize)){
 				validFile = false; break;
